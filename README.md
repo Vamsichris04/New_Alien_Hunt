@@ -31,7 +31,8 @@ Your mission is to survive and eliminate the Alien before it gets to you. But be
 - `s` - Move South  
 - `a` - Attack (Use your equipped weapon)  
 - `h` - Display How to Play instructions  
-- `q` - Quit the game  
+- `q` - Quit the game
+- 'd' - Debugging mode
 
 ### **Hints for Hazards**  
 - **"You hear a grotesque screeching nearby...."** - An Alien is nearby.  
