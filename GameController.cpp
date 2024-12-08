@@ -1,8 +1,14 @@
 #include "GameController.h"
 #include <iostream>
+
+#include "Alien.h"
 #include "Room.h"
 #include "Person.h"
 #include "Entity.h"
+#include "Hazard.h"
+#include "Survivor.h"
+#include "Treasure.h"
+#include "Weapon.h"
 
 using namespace std;
 
@@ -136,12 +142,68 @@ vector<vector<Room *>> GameController::buildMap(const vector<vector<char>> &map)
     return roomGrid;
 }
 
-// -------------------------------------------------------- //
-// Print hints for adjacent rooms
+Room *GameController::buildRoom(char entity) {
+    Entity* startingEntity = nullptr;
+
+    // Build entities in the room (if applicable)
+    switch (entity) {
+        case '>': {
+            // Create two guns and two flamethrowers on the map
+            if (gunCount < 2) {
+                startingEntity = new Gun(3, "gun", 2);
+                gunCount++;
+            } else {
+                startingEntity = new Flamethrower(3, "flamethrower", 3);
+                flamethrowerCount++;
+            }
+            break;
+        } case '!': {
+            startingEntity = new Survivor();
+            break;
+        } case '@': {
+            // Create two exposed wire hazards and two low oxygen hazards
+            if (exposedWiresCount < 2) {
+                startingEntity = new ExposedWires("exposed wires", 5);
+                exposedWiresCount++;
+            } else {
+                startingEntity = new LowOxygenRoom("low oxygen", 4);
+                lowOxygenCount++;
+            }
+            break;
+        } case '?': {
+            // Create one ammo and one medkit
+            if (ammoCount < 1) {
+                startingEntity = new Ammo(3, "ammo");
+                ammoCount++;
+            } else {
+                startingEntity = new Medkit(3, "medkit");
+                medkitCount++;
+            }
+            break;
+        } case '#': {
+            startingEntity = new Alien();
+            break;
+        } default:
+            break;
+    }
+
+    // Build room with the assigned entity
+    Room* startingRoom = new Room(startingEntity, nullptr);
+
+    // If the entity in the room is a person, add a person to the room.
+    if (entity == '+') {
+        Person* newPerson = new Person(10, startingRoom);
+        newPerson->setWeapon(new Knife(1, "knife", 1));
+        startingRoom->setPerson(newPerson);
+
+    }
+
+    return startingRoom;
+}
+
 
 // -------------------------------------------------------- //
 // Print Control Prompt
-
 char GameController::printControlPrompt() {
     char input;
     cout << "Action: N)orth, S)outh, E)ast, W)est, F)ire, H)elp, Q)uit: ";
@@ -150,6 +212,7 @@ char GameController::printControlPrompt() {
 }
 
 // -------------------------------------------------------- //
+// Print hints for adjacent rooms
 
 void GameController::printRoomHints(const Room *room) {
     if (room->getLeft() && room->getLeft()->getEntity()) {
