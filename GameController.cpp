@@ -120,21 +120,29 @@ vector<vector<Room *>> GameController::buildMap(const vector<vector<char>> &map)
     for (int i = 0; i < rows; ++i) {
         for (int j = 0; j < cols; ++j) {
             Room* currentRoom = roomGrid[i][j];
+
+            // Set up pointer if not in the first row
             if (i > 0) {
                 currentRoom->setUp(roomGrid[i - 1][j]);
                 roomGrid[i - 1][j]->setDown(currentRoom);
             }
+
+            // Set down pointer if not in the last row
             if (i < rows - 1) {
                 currentRoom->setDown(roomGrid[i + 1][j]);
                 roomGrid[i + 1][j]->setUp(currentRoom);
             }
+
+            // Set left pointer if not in the first column
             if (j > 0) {
                 currentRoom->setLeft(roomGrid[i][j - 1]);
                 roomGrid[i][j - 1]->setRight(currentRoom);
             }
+
+            // Set right pointer if not in the last column
             if (j < cols - 1) {
                 currentRoom->setRight(roomGrid[i][j + 1]);
-                roomGrid[i + 1][j]->setLeft(currentRoom);
+                roomGrid[i][j + 1]->setLeft(currentRoom);
             }
         }
     }
@@ -215,19 +223,17 @@ char GameController::printControlPrompt() {
 // Print hints for adjacent rooms
 
 void GameController::printRoomHints(const Room *room) {
-    if (room->getLeft() && room->getLeft()->getEntity()) {
+    if (room->getLeft() != nullptr && room->getLeft()->getEntity() != nullptr) {
         room->getLeft()->getEntity()->hint();
     }
-    if (room->getRight() && room->getRight()->getEntity()) {
+    if (room->getRight() != nullptr && room->getRight()->getEntity() != nullptr) {
         room->getRight()->getEntity()->hint();
     }
-    if (room->getUp() && room->getUp()->getEntity()) {
+    if (room->getUp() != nullptr && room->getUp()->getEntity() != nullptr) {
         room->getUp()->getEntity()->hint();
     }
-    if (room->getDown() && room->getDown()->getEntity()) {
+    if (room->getDown() != nullptr && room->getDown()->getEntity() != nullptr) {
         room->getDown()->getEntity()->hint();
-    } else {
-        std::cout << "No dangers detected nearby.\n";
     }
 }
 
@@ -239,6 +245,7 @@ void GameController::start(const std::vector<std::vector<char>>& mapBuilder) {
     printGameDescription();
 
     currMap = buildMap(mapBuilder);
+    cout << "map built" << endl;
 
     Room* room = currMap[0][3];
     player = room->getPerson();
@@ -308,6 +315,17 @@ void GameController::start(const std::vector<std::vector<char>>& mapBuilder) {
                 break;
             default:
                 break;
+        }
+    }
+
+    deconstructMap();
+}
+
+void GameController::deconstructMap() {
+    for (auto& row : currMap) {
+        for (auto& element : row) {
+            delete element;
+            element = nullptr;
         }
     }
 }

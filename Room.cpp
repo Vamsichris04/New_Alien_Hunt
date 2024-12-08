@@ -21,17 +21,10 @@ Room::Room(Entity *startingObject, Person *startingPlayer) {
 // Room destructor definition
 Room::~Room() {
     delete object;
-    delete up;
-    delete down;
-    delete left;
-    delete right;
+    delete player;
 
     object = nullptr;
     player = nullptr;
-    up = nullptr;
-    down = nullptr;
-    left = nullptr;
-    right = nullptr;
 }
 
 // -------------------------------------------------------- //

@@ -48,11 +48,13 @@ private:
     std::vector<std::vector<Room*>> buildMap(const std::vector<std::vector<char>>& map);
     Room* buildRoom(char entity);
     static void printRoomHints(const Room* room);
-    static void printGameDescription() ;
+    static void printGameDescription();
     void printCurrMap() const;
-    static bool checkGameOver(const Person* p) ;
+    static bool checkGameOver(const Person* p);
 
-    [[nodiscard]] static char printControlPrompt() ;
+    [[nodiscard]] static char printControlPrompt();
+
+    void deconstructMap();
 public:
     GameController();
     ~GameController();
