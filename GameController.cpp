@@ -34,9 +34,69 @@ GameController::~GameController() {
     delete player;
     player = nullptr;
 }
+// -------------------------------------------------------- //
+// Check if the Game is Over
+
+bool GameController::checkGameOver(const Person* p) {
+    if (p->getHealth() <= 0) {
+        cout << "Your health has dropped to zero.\n";
+        return true; // Game ends if health is zero or less
+    }
+    return false;
+}
+
+void GameController::printGameDescription() {
+    cout << "\n=== Spaceship Survival Game Instructions ===\n";
+    cout << "Navigate through the spaceship, avoiding hazards and defeating the alien.\n";
+    cout << "\nControls:\n";
+    cout << "  - 'n': Move North\n";
+    cout << "  - 's': Move South\n";
+    cout << "  - 'e': Move East\n";
+    cout << "  - 'w': Move West\n";
+    cout << "  - 'f': Attack (Use your equipped weapon)\n";
+    cout << "  - 'h': Display this help message\n";
+    cout << "  - 'q': Quit the game\n";
+    cout << "\nHazards:\n";
+    cout << "  - Alien: Encounter it without preparation, and it's game over.\n";
+    cout << "  - Exposed Wires: Entering a room may cause damage.\n";
+    cout << "  - Low Oxygen Rooms: Damage your health over time.\n";
+    cout << "\nWeapons:\n";
+    cout << "  - Knife: Close-range weapon.\n";
+    cout << "  - Gun: Medium-range weapon (requires ammo).\n";
+    cout << "  - Flamethrower: Long-range and powerful (requires ammo).\n";
+    cout << "\nObjectives:\n";
+    cout << "  - Find weapons and treasures.\n";
+    cout << "  - Avoid hazards.\n";
+    cout << "  - Defeat the alien to win the game.\n";
+    cout << "===========================================\n";
+}
 
 // -------------------------------------------------------- //
 // Map builder functions
+
+// Print the Current Map
+
+void GameController::printCurrMap() const {
+    if (!debugMode) return; // Only print the map in debug mode
+
+    cout << "\nCurrent Map:\n";
+    for (const auto& row : currMap) {
+        for (const auto& room : row) {
+            if (room->getPerson() != nullptr) {
+                cout << '+'; // Represent the player's position
+            } else if (room->getEntity() != nullptr) {
+                cout << room->getEntity()->character(); // Display entity's character
+            } else {
+                cout << '.'; // Empty room
+            }
+            cout << " ";
+        }
+        cout << endl;
+    }
+    cout << endl;
+}
+
+// -------------------------------------------------------- //
 
 vector<vector<Room *>> GameController::buildMap(const vector<vector<char>> &map) {
     const int rows = map.size();
@@ -78,6 +138,18 @@ vector<vector<Room *>> GameController::buildMap(const vector<vector<char>> &map)
 
 // -------------------------------------------------------- //
 // Print hints for adjacent rooms
+
+// -------------------------------------------------------- //
+// Print Control Prompt
+
+char GameController::printControlPrompt() {
+    char input;
+    cout << "Action: N)orth, S)outh, E)ast, W)est, F)ire, H)elp, Q)uit: ";
+    cin >> input;
+    return input; // Convert input to lowercase for consistent handling
+}
+
+// -------------------------------------------------------- //
 
 void GameController::printRoomHints(const Room *room) {
     if (room->getLeft() && room->getLeft()->getEntity()) {
